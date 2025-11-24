@@ -30,7 +30,7 @@ PORT3代币使用了一个名为 CATERC20 的跨链桥代币合约，它集成�
 由于黑客调用了bridgeIn，所以无论世事如何，不妨先查看下黑客bridgeIn的Input data
 
 代码见 src/DecodeVAA.t.sol
-```Solidity
+```bash
 [PASS] testDecodeAttackVAA() (gas: 12173)
 Logs:
   ========== Decoded Payload ==========
@@ -96,16 +96,16 @@ Ran 2 test suites in 41.22ms (33.47ms CPU time): 3 tests passed, 0 failed, 0 ski
 也确实是Arb网络。
 
 ### 查询查询 BSC 上 PORT3 合约中注册的 Arbitrum emitter 地址
-
+emitter： 跨链消息的"发送者"地址（只有经过注册的地址才是合法的地址）
 
 查询 BSC 上 PORT3 合约的 tokenContracts(23)
-```
+```bash
 root@racknerd-9da1d08:~/home/port3-review/wormhole-study# cast call 0xb4357054c3dA8D46eD642383F03139aC7f090343 \
   "tokenContracts(uint16)(bytes32)" 23 \
   --rpc-url https://bsc-dataseed.binance.org
 0x00000000000000000000000091d8264e3215de766cba1cc936b08287b931bcdf
 ```
-```
+```bash
 BSC 合约注册的 Arbitrum Emitter:
 0x00000000000000000000000091d8264e3215de766cba1cc936b08287b931bcdf
                           └─> 0x91d8264e3215de766cba1cc936b08287b931bcdf
@@ -207,7 +207,7 @@ PORT3合约反编译:https://app.dedaub.com/binance/address/0xb4357054c3da8d46ed
 注册哈希：https://bscscan.com/tx/0xfaf450571541b95f924024ac3febd5cf6c16695ce787217ca8870350309051c1
 
 我们来解析一下该笔交互
-```
+```bash
 root@racknerd-9da1d08:~/home/port3-review# cast tx 0xfaf450571541b95f924024ac3febd5cf6c16695ce787217ca8870350309051c1 \
   --rpc-url https://bsc-dataseed.binance.org
 
@@ -284,8 +284,36 @@ function verify(address owner, bytes sig, bytes32 hash) {
     return recovered == owner;
 }
 ```
-```
 
+
+### wormhole 交互分析
 查询 wormhole 看该地址的跨链情况：https://wormholescan.io/#/txs?address=0xb13A503dA5f368E48577c87b5d5AeC73d08f812E&network=Mainnet
 
-可以发现黑客有三笔跨链记录。
+可以发现黑客有三笔跨链记录。拆解一下交易明细。
+
+```bash
+root@racknerd-9da1d08:~/home/port3-review# cast tx 0x14c4b787e136ce0f71e7c8ed67b86fe82fe3e3ba63ed280596e073c638d06d7c \
+  --rpc-url https://arb1.arbitrum.io/rpc
+
+blockHash            0x4fc577703e814936d8a6b3f5ae4b8f69e52decc434a320714722704deda80f22
+blockNumber          403048728
+from                 0xb13A503dA5f368E48577c87b5d5AeC73d08f812E
+transactionIndex     5
+effectiveGasPrice    10000000
+
+accessList           []
+chainId              42161
+gasLimit             79101
+hash                 0x14c4b787e136ce0f71e7c8ed67b86fe82fe3e3ba63ed280596e073c638d06d7c
+input                0x9a2a40b700000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000f000000000000000000000000000000000000000000000000000000000000006500000000000000000000000000000000000000000000000000038d7ea4c680000000000000000000000000004644bbcfd26a79a79254af30ed8ab80658a73b320017000000000000000000000000b13a503da5f368e48577c87b5d5aec73d08f812e000406000000000000000000000000000000000000000000000000000000
+maxFeePerGas         13500000
+maxPriorityFeePerGas 0
+nonce                5
+r                    0xbc4dbcb0b055e2ceb7e6305a948ba6af5f9f3be15fee751902505148d1b6dc11
+s                    0x1e5e7d642706f5c6054dc609ba9b71b47a8ca7730377680598bd0d4f4be8b14c
+to                   0x4644BBcfd26a79A79254aF30ed8Ab80658a73B32
+type                 2
+value                0
+yParity              0
+```
+
