@@ -289,7 +289,7 @@ function verify(address owner, bytes sig, bytes32 hash) {
 ### wormhole 交互分析
 查询 wormhole 看该地址的跨链情况：https://wormholescan.io/#/txs?address=0xb13A503dA5f368E48577c87b5d5AeC73d08f812E&network=Mainnet
 
-可以发现黑客有三笔跨链记录。拆解一下交易明细。
+可以发现黑客有三笔跨链记录。拆解一下交易明细，拿一笔交易来拆解分析一下。
 
 ```bash
 root@racknerd-9da1d08:~/home/port3-review# cast tx 0x14c4b787e136ce0f71e7c8ed67b86fe82fe3e3ba63ed280596e073c638d06d7c \
@@ -297,21 +297,21 @@ root@racknerd-9da1d08:~/home/port3-review# cast tx 0x14c4b787e136ce0f71e7c8ed67b
 
 blockHash            0x4fc577703e814936d8a6b3f5ae4b8f69e52decc434a320714722704deda80f22
 blockNumber          403048728
-from                 0xb13A503dA5f368E48577c87b5d5AeC73d08f812E
+from                 0xb13A503dA5f368E48577c87b5d5AeC73d08f812E # 黑客地址
 transactionIndex     5
 effectiveGasPrice    10000000
 
 accessList           []
-chainId              42161
+chainId              42161 # Arbitrum EVM Chain ID
 gasLimit             79101
 hash                 0x14c4b787e136ce0f71e7c8ed67b86fe82fe3e3ba63ed280596e073c638d06d7c
 input                0x9a2a40b700000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000f000000000000000000000000000000000000000000000000000000000000006500000000000000000000000000000000000000000000000000038d7ea4c680000000000000000000000000004644bbcfd26a79a79254af30ed8ab80658a73b320017000000000000000000000000b13a503da5f368e48577c87b5d5aec73d08f812e000406000000000000000000000000000000000000000000000000000000
 maxFeePerGas         13500000
 maxPriorityFeePerGas 0
-nonce                5
+nonce                5 
 r                    0xbc4dbcb0b055e2ceb7e6305a948ba6af5f9f3be15fee751902505148d1b6dc11
 s                    0x1e5e7d642706f5c6054dc609ba9b71b47a8ca7730377680598bd0d4f4be8b14c
-to                   0x4644BBcfd26a79A79254aF30ed8Ab80658a73B32
+to                   0x4644BBcfd26a79A79254aF30ed8Ab80658a73B32 # 黑客部署的恶意合约
 type                 2
 value                0
 yParity              0
