@@ -390,14 +390,12 @@ Block: 403558215
 Paid: 0.00000048019 ETH (48019 gas * 0.01 gwei)
 
 ✅ Sequence #1 on arbitrum | Total Paid: 0.00000048019 ETH (48019 gas * avg 0.01 gwei)
-                                                                                                                                                                                                                           
-
+                                                                                    
 ==========================
 
 ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
 
 ```
-
 
 
 
